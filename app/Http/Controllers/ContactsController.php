@@ -24,7 +24,7 @@ class ContactsController extends Controller
      */
     public function create()
     {
-        return view('front.contacts.create');
+        //
     }
 
     /**
@@ -76,7 +76,20 @@ class ContactsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try{
+            $request->validate([
+                'first_name' => 'string|max:50|required',
+                'last_name' => 'string|max:50|required',
+                'email' => 'email:rfc,dns|required',
+                'contact_number' => 'numeric'
+            ]);
+
+            $contact = Contact::find($id);
+            $contact->update($request->all());
+            return redirect()->route('home')->with(['success' => 'The contact has been updated successfully']);
+        } catch (\Throwable $th) {
+            return redirect()->route('home')->with(['error' => 'There was an error. Please, check the contact fields.']);
+        }
     }
 
     /**
